@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Temporal Cloud Planner</title>
+		<meta name="description" content="Temporal Cloud Form Interface" />
+		<meta name="keywords" content="fullscreen form, css animations, distraction-free, Temporal, temporal.io, Temporal Cloud" />
+		<meta name="author" content="Kevin Paul Martin" />
+		<!-- <link rel="shortcut icon" href="/img/temporal.svg"> -->
+		<link rel="icon" type="image/svg" href="img/temporal.svg">
+		<link rel="icon" type="image/png" href="img/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="img/favicon-16x16.png" sizes="16x16">
+		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="css/demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/component.css" />
+		<link rel="stylesheet" type="text/css" href="css/cs-select.css" />
+		<link rel="stylesheet" type="text/css" href="css/cs-skin-boxes.css" />
+		<script src="js/modernizr.custom.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="fs-form-wrap" id="fs-form-wrap">
+				<div class="fs-title">
+					<h1>Temporal Cloud Workload Planner</h1>
+				</div>
+				<form id="myform" class="fs-form fs-form-full" autocomplete="off">
+					<ol class="fs-fields">
+						<!-- Slide 1 - Email -->
+						<li>
+							<label class="fs-field-label fs-anim-upper" for="q1" data-info="We won't send you spam, we promise...">What's your email address?</label>
+							<input class="fs-anim-lower" id="q1" name="q1" type="email" placeholder="you@whereyouwork.com" required/>
+						</li>
+						<!-- Slide 2 - Region -->
+						<li>
+							<label class="fs-field-label fs-anim-upper" for="q3" data-info="We recommend deploying in the same region as your application for minimal latency">What region would you like to run in?</label>
+							<input class="fs-anim-lower" id="q3" name="q3" type="text" placeholder="us-east-1" required/>
+						</li>
+						<!-- Slide 4 - Workflow Description -->
+						<li>
+							<label class="fs-field-label fs-anim-upper" for="q4">Describe the workflow(s)</label>
+							<div class="clearfix fs-anim-lower fs-field-table">
+								<table id="workload-table">
+									<tr>
+										<th>Workflow</th>
+										<th># of steps per Workflow</th>
+										<th># of times Workflow Run</th>
+										<th>Per unit of time</th>
+										<th></th>
+									</tr>
+
+									<tr id="q4a">
+										<td>
+											1
+										</td>
+										<td>
+											<input id="q4a-1" name="q4a-1" type="number" placeholder="10"/>
+										</td>
+										<td>
+                      <input id="q4a-2" name="q4a-2" type="number" placeholder="10"/>
+										</td>
+										<td>
+                      <select id="q4a-2" name="q4a-2">
+                        <option value="Second">Second</option>
+                        <option value="Minute">Minute</option>
+												<option value="Hour">Hour</option>
+                        <option value="Day">Day</option>
+                        <option value="Week">Week</option>
+                        <option value="Month">Month</option>
+										</td>
+										<td>
+											<button id="q4a-delete" class="delete-db-row" type="button" disabled>-</button><button class="add-db-row" type="button">+</button>
+										</td>
+									</tr>
+
+									<tr id="q4b">
+										<td>
+											2
+										</td>
+										<td>
+											<input id="q4b-1" name="q4b-1" type="number" placeholder="10"/>
+										</td>
+										<td>
+                      <input id="q4b-2" name="q4b-2" type="number" placeholder="10"/>
+										</td>
+										<td>
+                      <select id="q4b-2" name="q4b-2">
+                        <option value="Second">Second</option>
+                        <option value="Minute">Minute</option>
+												<option value="Hour">Hour</option>
+                        <option value="Day">Day</option>
+                        <option value="Week">Week</option>
+                        <option value="Month">Month</option>
+										</td>
+										<td>
+											<button id="q4b-delete" name="q4b-4" class="delete-db-row" type="button">-</button><button class="add-db-row" type="button">+</button>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</li>
+						<!-- Slide 5 - Budget -->
+						<li>
+							<label class="fs-field-label fs-anim-upper" for="q6">What is your monthly budget?</label>
+							<input class="fs-mark fs-anim-lower" id="q6" name="q6" type="number" placeholder="1000" step="100" min="100"/>
+						</li>
+					</ol><!-- /fs-fields -->
+					<button id="send-email-button" class="fs-submit" type="submit">Send Answers</button>
+				</form><!-- /fs-form -->
+			</div><!-- /fs-form-wrap -->
+		</div><!-- /container -->
+		<script src="js/classie.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/selectFx.js"></script>
+		<script src="js/fullscreenForm.js"></script>
+		<script>
+			(function() {
+				var formWrap = document.getElementById( 'fs-form-wrap' );
+				var sendEmailButton = document.getElementById( 'send-email-button' );
+				var queryString = window.location.search;
+				var urlParams = new URLSearchParams(queryString);
+				new FForm( formWrap, {
+					onReview : function() {
+						classie.add( document.body, 'overview' ); // for demo purposes only
+					}
+				} );
+				var ref = urlParams.get('ref');
+				if (ref !== null) {
+						sendEmailButton.innerHTML = 'Send Answers to '+ ref;
+				};
+			})();
+		</script>
+		<script>
+		// Database Workload Table Logic
+
+		var wfIdx = 2; // initial number of database rows in table
+
+		// delete database row
+		$(document).on("click", '.delete-db-row',function() {
+			$('#workload-table tr:last').remove();
+			wfIdx--;
+		});
+
+		// add database row
+		$(document).on("click", '.add-db-row',function() {
+			var rowChar = String.fromCharCode(97 + wfIdx);
+			wfIdx++;
+			$('#workload-table tr:last').after('<tr id="q4'+rowChar+'"><td>'+wfIdx+'</td><td><input id="q4'+rowChar+'-1" name="q4'+rowChar+'-1" type="number" placeholder="10"/></td><td><input id="q4'+rowChar+'-2" name="q4'+rowChar+'-2" type="number" placeholder="10"/></td><td><select id="q4'+rowChar+'-2" name="q4'+rowChar+'-2"><option value="Second">Second</option><option value="Minute">Minute</option><option value="Hour">Hour</option><option value="Day">Day</option><option value="Week">Week</option><option value="Month">Month</option></td><td><button id="q4'+rowChar+'-delete" class="delete-db-row" type="button">-</button><button class="add-db-row" type="button">+</button></td></tr>');
+		});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  nginx:
+    image: "nginx:latest"
+    ports:
+      - "8080:80"
+    volumes:
+      - ${PWD}:/usr/share/nginx/html:ro
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
